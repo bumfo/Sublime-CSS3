@@ -1,0 +1,695 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+name: CSS3
+scopeName: source.css
+fileTypes:
+- css
+- css.erb
+foldingStartMarker: /\*\*(?!\*)|\{\s*($|/\*(?!.*?\*/.*\S))
+foldingStopMarker: (?<!\*)\*\*/|^\s*\}
+keyEquivalent: ^~C
+patterns:
+- include: '#comment-block'
+- include: '#selector'
+- include: '#charset'
+- include: '#import'
+- include: '#font-face'
+- include: '#media'
+- include: '#custom-media'
+- include: '#keyframes'
+- include: '#property-list'
+repository:
+  cascading-variable:
+    begin: (var)\s*(\()
+    beginCaptures:
+      '1':
+        name: support.function.var.css
+      '2':
+        name: punctuation.section.function.css
+    end: (\))
+    endCaptures:
+      '1':
+        name: punctuation.section.function.css
+    name: support.type.cascading-variable.css
+    patterns:
+    - match: (--)
+      name: support.constant.custom-property-name.prefix.css
+    - match: (?i)([_a-z]+[_a-z0-9-]*)
+      name: support.type.variable-name.css
+    - match: (,)
+      name: punctuation.definition.arbitrary-repitition.css
+    - include: '#numeric-values'
+  charset:
+    begin: \s*((@)charset\b)\s*
+    captures:
+      '1':
+        name: keyword.control.at-rule.charset.css
+      '2':
+        name: punctuation.definition.keyword.css
+    end: \s*((?=;|$))
+    name: meta.at-rule.charset.css
+    patterns:
+    - include: '#string-double'
+    - include: '#string-single'
+  color-values:
+    patterns:
+    - comment: http://www.w3.org/TR/CSS21/syndata.html#value-def-color
+      match: \b(aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow)\b
+      name: support.constant.color.w3c-standard-color-name.css
+    - comment: 'These colours are mostly recognised but will not validate. ref: http://www.w3schools.com/css/css_colornames.asp'
+      match: \b(aliceblue|antiquewhite|aquamarine|azure|beige|bisque|blanchedalmond|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkgrey|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|gainsboro|ghostwhite|gold|goldenrod|greenyellow|grey|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightgrey|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|limegreen|linen|magenta|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|oldlace|olivedrab|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|thistle|tomato|turquoise|violet|wheat|whitesmoke|yellowgreen)\b
+      name: invalid.deprecated.color.w3c-non-standard-color-name.css
+    - begin: (hsla?|rgba?)\s*(\()
+      beginCaptures:
+        '1':
+          name: support.function.misc.css
+        '2':
+          name: punctuation.section.function.css
+      end: (\))
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      patterns:
+      - match: "(?x)\\b\n\t\t\t\t\t\t(0*((1?[0-9]{1,2})|(2([0-4][0-9]|5[0-5])))\\\
+          s*,\\s*){2}\n\t\t\t\t\t\t(0*((1?[0-9]{1,2})|(2([0-4][0-9]|5[0-5])))\\b)\n\
+          \t\t\t\t\t\t(\\s*,\\s*((0?\\.[0-9]+)|[0-1]))?\n\t\t\t\t\t"
+        name: constant.other.color.rgb-value.css
+      - match: \b([0-9]{1,2}|100)\s*%,\s*([0-9]{1,2}|100)\s*%,\s*([0-9]{1,2}|100)\s*%
+        name: constant.other.color.rgb-percentage.css
+      - include: '#numeric-values'
+  comment-block:
+    begin: /\*
+    captures:
+      '0':
+        name: punctuation.definition.comment.css
+    end: \*/
+    name: comment.block.css
+  custom-media:
+    begin: (?=\s*@custom-media\s*.*?)
+    end: \s*;
+    endCaptures:
+      '1':
+        name: punctuation.section.property-list.css
+    patterns:
+    - begin: \s*((@)custom-media)(?=.*?)
+      beginCaptures:
+        '1':
+          name: keyword.control.at-rule.custom-media.css
+        '2':
+          name: punctuation.definition.keyword.css
+        '3':
+          name: support.constant.custom-media.css
+      end: \s*(?=;)
+      name: meta.at-rule.custom-media.css
+      patterns:
+      - include: '#media-query-list'
+  font-face:
+    begin: \s*((@)font-face)\s*(?=\{)
+    beginCaptures:
+      '1':
+        name: keyword.control.at-rule.font-face.css
+      '2':
+        name: punctuation.definition.keyword.css
+    end: \s*(\})
+    endCaptures:
+      '1':
+        name: punctuation.section.property-list.css
+    name: meta.at-rule.font-face.css
+    patterns:
+    - include: '#rule-list'
+  import:
+    begin: \s*((@)import\b)\s*
+    captures:
+      '1':
+        name: keyword.control.at-rule.import.css
+      '2':
+        name: punctuation.definition.keyword.css
+    end: \s*((?=;|\}))
+    name: meta.at-rule.import.css
+    patterns:
+    - include: '#string-double'
+    - include: '#string-single'
+    - begin: \s*(url)\s*(\()\s*
+      beginCaptures:
+        '1':
+          name: support.function.url.css
+        '2':
+          name: punctuation.section.function.css
+      end: \s*(\))\s*
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      patterns:
+      - match: '[^''") \t]+'
+        name: variable.parameter.url.css
+      - include: '#string-single'
+      - include: '#string-double'
+    - include: '#media-query-list'
+  keyframe-name:
+    begin: (?i)\s*[-]?([_\w\-]*)?
+    beginCaptures:
+      '1':
+        name: entity.other.animation-name.css
+    end: \s*(?:(,)|(?=[{;]))
+    endCaptures:
+      '1':
+        name: punctuation.definition.arbitrary-repitition.css
+  keyframes:
+    begin: (?=\s*@(?:-webkit-|-moz-|-o-)?keyframes\s*.*?)
+    end: \s*(\})
+    endCaptures:
+      '1':
+        name: punctuation.section.property-list.css
+    patterns:
+    - begin: \s*((@)(-webkit-|-moz-|-o-)?keyframes)(?=.*?)
+      beginCaptures:
+        '1':
+          name: keyword.control.at-rule.keyframe.css
+        '2':
+          name: punctuation.definition.keyword.css
+        '3':
+          name: support.type.property-vendor.css
+        '4':
+          name: support.constant.keyframe.css
+      end: \s*(?=\{)
+      name: meta.at-rule.keyframe.css
+      patterns:
+      - begin: \s*(?=[^{;])
+        end: \s*(?=[{;])
+        patterns:
+        - include: '#keyframe-name'
+    - begin: \s*(\{)
+      beginCaptures:
+        '1':
+          name: punctuation.section.property-list.css
+      end: (?=\})
+      patterns:
+      - include: $self
+  media:
+    begin: (?=\s*@media\s*.*?)
+    end: \s*(\})
+    endCaptures:
+      '1':
+        name: punctuation.section.property-list.css
+    patterns:
+    - begin: \s*((@)media)(?=.*?)
+      beginCaptures:
+        '1':
+          name: keyword.control.at-rule.media.css
+        '2':
+          name: punctuation.definition.keyword.css
+        '3':
+          name: support.constant.media.css
+      end: \s*(?=\{)
+      name: meta.at-rule.media.css
+      patterns:
+      - include: '#media-query-list'
+    - begin: \s*(\{)
+      beginCaptures:
+        '1':
+          name: punctuation.section.property-list.css
+      end: (?=\})
+      patterns:
+      - include: $self
+  media-query:
+    begin: (?i)\s*(only|not)?\s*(all|aural|braille|embossed|handheld|print|projection|screen|tty|tv)?
+    beginCaptures:
+      '1':
+        name: keyword.operator.logic.media.css
+      '2':
+        name: support.constant.media.css
+    end: \s*(?:(,)|(?=[{;]))
+    endCaptures:
+      '1':
+        name: punctuation.definition.arbitrary-repitition.css
+    patterns:
+    - begin: \s*(and)?\s*(\()\s*
+      beginCaptures:
+        '1':
+          name: keyword.operator.logic.media.css
+      end: \)
+      patterns:
+      - begin: "(?x)\n\t\t\t\t\t\t(\n\t\t\t\t\t\t\t(-webkit-|-o-)?\n\t\t\t\t\t\t\t\
+          ((min|max)-)?\n\t\t\t\t\t\t\t(-moz-)?\n\t\t\t\t\t\t\t(\n\t\t\t\t\t\t\t\t\
+          ((device-)?(height|width|aspect-ratio|pixel-ratio))|\n\t\t\t\t\t\t\t\t(color(-index)?)|monochrome|resolution\n\
+          \t\t\t\t\t\t\t)\n\t\t\t\t\t\t)|grid|scan|orientation\n\t\t\t\t\t\t\\s*(?=[:)])"
+        beginCaptures:
+          '0':
+            name: support.type.property-name.media.css
+          '2':
+            name: support.type.vendor-prefix.css
+          '5':
+            name: support.type.vendor-prefix.css
+        end: (:)|(?=\))
+        endCaptures:
+          '1':
+            name: punctuation.separator.key-value.css
+      - match: \b(portrait|landscape|progressive|interlace)
+        name: support.constant.property-value.css
+      - captures:
+          '1':
+            name: constant.numeric.css
+          '2':
+            name: keyword.operator.arithmetic.css
+          '3':
+            name: constant.numeric.css
+        match: \s*(\d+)(/)(\d+)
+      - include: '#numeric-values'
+  media-query-list:
+    begin: \s*(?=[^{;])
+    end: \s*(?=[{;])
+    patterns:
+    - include: '#media-query'
+  numeric-values:
+    patterns:
+    - captures:
+        '1':
+          name: punctuation.definition.constant.css
+      match: (#)([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b
+      name: constant.other.color.rgb-value.css
+    - captures:
+        '1':
+          name: keyword.other.unit.css
+      match: "(?x)\n\t\t\t\t(?:-|\\+)?(?:(?:[0-9]+(?:\\.[0-9]+)?)|(?:\\.[0-9]+))\n\
+        \t\t\t\t((?:px|pt|ch|cm|deg|dpi|dpcm|dppx|em|ex|in|grad|fr|mm|ms|pc|rad|rem|s|turn|vh|vw|vmin|vmax|x)\\\
+        b|%)?\n\t\t\t"
+      name: constant.numeric.css
+  property-list:
+    begin: (?=\{)
+    end: \}
+    endCaptures:
+      '1':
+        name: punctuation.section.property-list.css
+    patterns:
+    - include: '#rule-list'
+  property-values:
+    patterns:
+    - include: '#vendor-prefix'
+    - include: '#repeat-notation'
+    - comment: blend-mode and isolation-mode
+      match: "\\b(?x)\n\t\t\t\t(color-(burn|dodge)|darken|difference|exclusion|\n\t\
+        \t\t\thard-light|hue|isolate|lighten|luminosity|multiply|overlay|\n\t\t\t\t\
+        saturation|screen|soft-light)\\b"
+      name: support.constant.property-value.css
+    - match: "(?x)\\b(\n\t\t\t\tbackground(-color|-image|-position|-size)?|\n\t\t\t\
+        \tborder-(bottom-|top-)?(right-|left-)radius|\n\t\t\t\tborder-(bottom|left|right|top)-color|\n\
+        \t\t\t\tborder-(bottom|left|right|top)-width|\n\t\t\t\tborder-(bottom|color|left|radius|right|spacing|top|width)|\n\
+        \t\t\t\tbottom|box-shadow|\n\t\t\t\tcolor|column(-count|-gap|-rule-color|-rule-width|-rule|-width)|columns|crop|\n\
+        \t\t\t\tfill-opacity|filter|flex(-grow|-shrink|-basis)|flood-color|\n\t\t\t\
+        \tfont(-size-adjust|-size|-stretch|-weight)?|\n\t\t\t\theight|\n\t\t\t\tleft|letter-spacing|lighting-color|\n\
+        \t\t\t\tmargin(-box|-bottom|-left|-right|-top)|margin|marker-offset|\n\t\t\
+        \t\tmax-(height|lines|size|width)|min-(height|width)|\n\t\t\t\toffset(-after|-before|-end|-start)?|opacity|order|outline(-color|-offset|-width)?|\n\
+        \t\t\t\tpadding-(box|bottom|left|right|top)|perspective(-origin)?|\n\t\t\t\
+        \tright|\n\t\t\t\tstop-(color|opacity)|stroke(-dasharray|-dashoffset|-miterlimit|-opacity|-width)|\n\
+        \t\t\t\tshape-(image-threshold|margin|outside)|\n\t\t\t\ttext(-decoration-color|-emphasis-color|-indent|-shadow|-size-adjust|-size)|top|transform(-origin)?|\n\
+        \t\t\t\tvertical-align|visibility|viewport-fill(-opacity)?|\n\t\t\t\twidth|word-spacing|\n\
+        \t\t\t\tz-index|zoom|\n\t\t\t\tblock-line-height|line-height|\n\t\t\t\tabsolute|all-scroll|always|armenian|at|auto|avoid|\n\
+        \t\t\t\tbaseline|below|bicubic|bidi-override|\n\t\t\t\t|bold|bolder|both|bottom|break-all|break-word|\n\
+        \t\t\t\tcapitalize|center|char|cjk-ideographic|col-resize|collapse|crosshair|currentColor|\n\
+        \t\t\t\tdashed|decimal-leading-zero|decimal|default|disabled|disc|distribute-all-lines|distribute-letter|distribute-space|distribute|dotted|double|\n\
+        \t\t\t\te-resize|ellipsis|\n\t\t\t\tfixed|from-image|from|\n\t\t\t\tgeometricPrecision|georgian|groove|\n\
+        \t\t\t\thand|hebrew|help|hidden|hiragana-iroha|hiragana|horizontal|\n\t\t\t\
+        \tideograph-alpha|ideograph-numeric|ideograph-parenthesis|ideograph-space|inactive|inherit|initial|\n\
+        \t\t\t\tinline-(box|block|flex|flexbox|grid|table|line-height)|inline|\n\t\
+        \t\t\tinside|inter-ideograph|inter-word|italic|\n\t\t\t\t(exclude|include)-ruby|\n\
+        \t\t\t\t(consider|disregard)-shifts|\n\t\t\t\talphabetic|\n\t\t\t\tblock|\n\
+        \t\t\t\tcentral|\n\t\t\t\thanging|\n\t\t\t\tideographic|\n\t\t\t\tlast|\n\t\
+        \t\t\tmathematical|\n\t\t\t\tmiddle|\n\t\t\t\tno-change|\n\t\t\t\treset-size|\n\
+        \t\t\t\ttext-over-edge|\n\t\t\t\ttext-under-edge|\n\t\t\t\tuse-script|\n\t\
+        \t\t\t(over|under)-edge|\n\t\t\t\tjustify|\n\t\t\t\tkatakana-iroha|katakana|keep-all|\n\
+        \t\t\t\tleft|lighter|line-edge|line-through|line|list-item|loose|lower-alpha|lower-greek|lower-latin|lower-roman|lowercase|lr-tb|ltr|\n\
+        \t\t\t\tmedium|middle|move|\n\t\t\t\tn-resize|ne-resize|newspaper|no-clip|no-drop|no-repeat|nw-resize|none|normal|not-allowed|nowrap|\n\
+        \t\t\t\toblique|optimize(Legibility|Quality|Speed)|outset|outside|overline|\n\
+        \t\t\t\tpixelated|pointer|pre(-(wrap|line))?|progress|\n\t\t\t\trelative|repeat-x|repeat-y|repeat|right|ridge|row-resize|rtl|\n\
+        \t\t\t\ts-resize|scroll-position|scroll|se-resize|separate|solid|square|static|strict|sub|super|sw-resize|\n\
+        \t\t\t\ttable(-footer-group|-header-group|-cell|-caption|-column-group|-column|-row-group|-row)?|\n\
+        \t\t\t\ttb-rl|\n\t\t\t\ttext-bottom|text-top|text|\n\t\t\t\tthick|thin|top|transparent|\n\
+        \t\t\t\tunderline|upper-alpha|upper-latin|upper-roman|uppercase|\n\t\t\t\t\
+        vertical(-(ideographic|text))?|visible(Painted|Fill|Stroke)?|\n\t\t\t\tw-resize|wait|whitespace|\n\
+        \t\t\t\tzero|\n\t\t\t\tsmaller|larger|\n\t\t\t\t((all-)?(petite|small)|titling)-caps|\n\
+        \t\t\t\t((xx?-)?(small|large))|painted|\n\t\t\t\trepeating-(linear|radial)-gradient|\n\
+        \t\t\t\tborder-box|\n\t\t\t\tcontent-box|\n\t\t\t\tradial-gradient|\n\t\t\t\
+        \tlinear-gradient|\n\t\t\t\tfill-box|\n\t\t\t\tmax-content|min-content|\n\t\
+        \t\t\tstroke-box|scale-down|snap|\n\t\t\t\tview-box|\n\t\t\t\tpadding|\n\t\
+        \t\t\tadd|alpha|alternate-reverse|alternate|antialiased|\n\t\t\t\tbackwards|blink|border|box|\n\
+        \t\t\t\tclosest-(side|corner)|color-stop|cover|contain|content|contents|clip|crisp-edges|\n\
+        \t\t\t\tdense|\n\t\t\t\tease-in-out|ease-out|ease-in|ease|end|evenodd|exclude|\n\
+        \t\t\t\tfarthest-corner|farthest-side|\n\t\t\t\tforwards|flexbox|flex(-start|-end)?|\n\
+        \t\t\t\tgradient|grayscale|grid(-height)?|glyphs|\n\t\t\t\tinfinite|intersect|\n\
+        \t\t\t\tlinear|local|luminance|\n\t\t\t\tmatrix(3d)?|\n\t\t\t\tnonzero|\n\t\
+        \t\t\tpaused|preserve-3d|progid:DXImageTransform.Microsoft.(Alpha|Blur|dropshadow|gradient|Shadow)|\n\
+        \t\t\t\treplaced|reverse|round|rotate(X|Y|Z|3d)?|running|\n\t\t\t\tscale(X|Y|Z|3d)?|skew(X|Y)?|space-between|space-around|space|span|stack|start|step-(end|start)|stretch|stroke|subtract|subgrid|\n\
+        \t\t\t\ttextfield|to|touch|transform|translate(X|Y|Z|3d)?|\n\t\t\t\tunicase|unset|\n\
+        \t\t\t\t(column|row|wrap)(-reverse)?|\n\t\t\t\tfill|flip|\n\t\t\t\t(diagonal|stacked)-fractions|\n\
+        \t\t\t\tordinal|\n\t\t\t\t(?:ultra-|extra-|semi-)?(?:condensed|expanded)|\n\
+        \t\t\t\t(lining|oldstyle|proportional|tabular)-nums|\n\t\t\t\tslashed-zero|\n\
+        \t\t\t\thistorical-forms|\n\t\t\t\t((no-)?(common|discretionary|historical))-ligatures|\n\
+        \t\t\t\t(no-)?contextual|\n\t\t\t\tall|\n\t\t\t\tjis04|jis78|jis83|jis90|simplified|traditional|(full|proportional)-width|ruby|\n\
+        \t\t\t\tstartColorStr|EndColorStr)\\b"
+      name: support.constant.property-value.css
+    - comment: can be either keywords or functions, therefore slightly more strict
+        matching
+      match: \b(circle|ellipse|inset)(?!\()\b
+      name: support.constant.property-value.css
+    - match: (\b(?i:arial|century|comic|courier|garamond|georgia|helvetica|impact|lucida|symbol|system|tahoma|times|trebuchet|utopia|verdana|webdings|sans-serif|serif|monospace)\b)
+      name: support.constant.font-name.css
+    - include: '#unicode-range'
+    - include: '#numeric-values'
+    - include: '#color-values'
+    - include: '#string-double'
+    - include: '#string-single'
+    - begin: (rect)\s*(\()
+      beginCaptures:
+        '1':
+          name: support.function.misc.css
+        '2':
+          name: punctuation.section.function.css
+      end: (\))
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      patterns:
+      - include: '#numeric-values'
+    - include: '#cascading-variable'
+    - begin: (cubic-bezier|steps)\s*(\()
+      beginCaptures:
+        '1':
+          name: support.function.timing-function.css
+        '2':
+          name: punctuation.section.function.css
+      end: (\))
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      name: support.type.function.easing.css
+      patterns:
+      - match: (,)+
+        name: punctuation.section.function.css
+      - include: '#numeric-values'
+      - match: (end|start)+
+        name: support.keyword.timing-direction.css
+    - begin: (circle|ellipse|inset|polygon)\s*(\()
+      beginCaptures:
+        '1':
+          name: support.function.shape.css
+        '2':
+          name: punctuation.section.function.css
+      end: (\))
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      name: support.type.shape.definition.css
+      patterns:
+      - include: '#numeric-values'
+      - match: (,)
+        name: punctuation.definition.arbitrary-repitition.css
+      - match: "\\b(?x)(\n\t\t\t\t\t\tat|\n\t\t\t\t\t\tbottom|\n\t\t\t\t\t\tcenter|closest-side|\n\
+          \t\t\t\t\t\tevenodd|\n\t\t\t\t\t\tfarthest-side|\n\t\t\t\t\t\tleft|\n\t\t\
+          \t\t\t\tnonzero|\n\t\t\t\t\t\tright|round|\n\t\t\t\t\t\ttop)\\b"
+        name: support.constant.property-value.css
+    - begin: (calc)\s*(\()
+      beginCaptures:
+        '1':
+          name: support.function.calc.css
+        '2':
+          name: punctuation.section.function.css
+      end: (\))
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      name: support.type.expression.calc.css
+      patterns:
+      - match: '[()]'
+        name: punctuation.section.function.css
+      - include: '#cascading-variable'
+      - include: '#numeric-values'
+      - match: '[-/*+]'
+        name: punctuation.operator.function.css
+    - begin: (attr|counter|counters|cross-fade|format|image-set|image|local|minmax|url)\s*(\()
+      beginCaptures:
+        '1':
+          name: support.function.misc.css
+        '2':
+          name: punctuation.section.function.css
+      end: (\))
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      patterns:
+      - include: '#string-single'
+      - match: (?:min|max)-content
+        name: support.constant.property-value.css
+      - include: '#string-double'
+      - include: '#numeric-values'
+      - include: '#color-values'
+      - match: '[^''") \t]+'
+        name: variable.parameter.misc.css
+    - match: \!\s*important
+      name: keyword.other.important.css
+  repeat-notation:
+    patterns:
+    - begin: (repeat)\s*(\()
+      beginCaptures:
+        '1':
+          name: support.function.misc.css
+        '2':
+          name: punctuation.section.function.css
+      end: (\))
+      endCaptures:
+        '1':
+          name: punctuation.section.function.css
+      patterns:
+      - include: '#string-single'
+      - match: (?:min|max)-content
+        name: support.constant.property-value.css
+      - include: '#string-double'
+      - include: '#numeric-values'
+      - match: '[^''") \t]+'
+        name: variable.parameter.misc.css
+  rule-list:
+    begin: \{
+    beginCaptures:
+      '0':
+        name: punctuation.section.property-list.css
+    end: (?=\s*\})
+    name: meta.property-list.css
+    patterns:
+    - include: '#comment-block'
+    - begin: (?<![-a-z])(?=[-a-z])
+      end: $|(?![-a-z])
+      name: meta.property-name.css
+      patterns:
+      - include: '#vendor-prefix'
+      - begin: \b(var-)(?i)([_a-z]+[_a-z0-9-]*)
+        beginCaptures:
+          '1':
+            name: keyword.other.custom-property.prefix.css
+          '2':
+            name: support.type.custom-property.name.css
+        end: \b
+        name: invalid.deprecated.custom-property.css
+      - begin: (?i)(--)([_a-z]+[_a-z0-9-]*)
+        beginCaptures:
+          '1':
+            name: keyword.other.custom-property.prefix.css
+          '2':
+            name: support.type.custom-property.name.css
+        end: \b
+        name: support.type.custom-property.css
+      - match: "\\b(?x)(azimuth|\n\t\t\t\t\t\tall|\n\t\t\t\t\t\tappearance|\n\t\t\t\
+          \t\t\talign(-items|-content|-self)?|\n\t\t\t\t\t\tanimation(-delay|-direction|-duration|-fill-mode|-iteration-count|-name|-play-state|-timing-function)?|\n\
+          \t\t\t\t\t\tbackface-visibility|\n\t\t\t\t\t\tbackground(-blend-mode|-clip|-origin|-size)|\n\
+          \t\t\t\t\t\tbehavior|\n\t\t\t\t\t\tborder-(bottom-|top-)?(right-|left-)?radius(-bottomleft|-bottomright|-topleft|-topright)?|\n\
+          \t\t\t\t\t\tborder-image(-outset|-repeat|-slice|-source|-width)?|\n\t\t\t\
+          \t\t\tbox-sizing|\n\t\t\t\t\t\tbox-align|box-pack|box-orient|box-direction|box-flex|(box-ordinal-)?group|\n\
+          \t\t\t\t\t\tclip-(path|rule)|\n\t\t\t\t\t\tcolumn(-count|-fill|-gap|-rule|-rule-color|-rule-style|-rule-width|-span|-width)|\n\
+          \t\t\t\t\t\t(alignment|dominant)-baseline|\n\t\t\t\t\t\talignment-adjust|\n\
+          \t\t\t\t\t\tbaseline-shift|\n\t\t\t\t\t\tgrid-template-(areas|columns|rows)|\n\
+          \t\t\t\t\t\tgrid-column-(end|start)|\n\t\t\t\t\t\tgrid-row-(end|start)|\n\
+          \t\t\t\t\t\tgrid-auto-(columns|flow|rows)|\n\t\t\t\t\t\tgrid-(area|column|row|template)|\n\
+          \t\t\t\t\t\tcolumns|\n\t\t\t\t\t\tinitial-letter-align|initial-letter|\n\
+          \t\t\t\t\t\tinline-flex|inline-box-align|\n\t\t\t\t\t\tinterpolation-mode|\n\
+          \t\t\t\t\t\tfilter|\n\t\t\t\t\t\tflex(-align|-basis|-direction|-flow|-grow|-item-align|-order|-shrink|-wrap|-pack|-line-pack)?|\n\
+          \t\t\t\t\t\thyphens|\n\t\t\t\t\t\tisolation|image-orientation|image-resolution|\n\
+          \t\t\t\t\t\tjustify-content|\n\t\t\t\t\t\tline-(box-contain|stacking-ruby|stacking-shift|stacking-strategy|stacking|clamp)|\n\
+          \t\t\t\t\t\tmask-(border-(mode|outset|repeat|slice|source|width)|border|clip|composite|image|mode|origin|position|repeat|size|type)|mask|\n\
+          \t\t\t\t\t\tmix-blend-mode|\n\t\t\t\t\t\torder|\n\t\t\t\t\t\toutline-offset|\n\
+          \t\t\t\t\t\toverflow-scrolling|\n\t\t\t\t\t\toverflow-wrap|\n\t\t\t\t\t\t\
+          perspective(-origin)?|\n\t\t\t\t\t\tshape-(image-threshold|margin|outside)|\n\
+          \t\t\t\t\t\ttab-size|\n\t\t\t\t\t\ttext-align-last|\n\t\t\t\t\t\ttext-emphasis(-color|-position|-style)?|\n\
+          \t\t\t\t\t\ttext-fill-color|\n\t\t\t\t\t\ttext-overflow|\n\t\t\t\t\t\ttext-height|\n\
+          \t\t\t\t\t\ttext-size-adjust|\n\t\t\t\t\t\ttransform(-origin(-x|-y)?|-style)?|\n\
+          \t\t\t\t\t\ttransition(-delay|-duration|-property|-timing-function)?|\n\t\
+          \t\t\t\t\tuser-select|\n\t\t\t\t\t\twill-change|word-break|writing-mode|\n\
+          \t\t\t\t\t\tbackground-attachment|background-color|background-image|background-position|background-repeat|background|box-shadow|border-radius|border-bottom-color|border-bottom-style|border-bottom-width|border-bottom|border-collapse|border-color|border-left-color|border-left-style|border-left-width|border-left|border-right-color|border-right-style|border-right-width|border-right|border-spacing|border-style|border-top-color|border-top-style|border-top-width|border-top|border-width|border|bottom|\n\
+          \t\t\t\t\t\tcaption-side|clear|clip|color|content|counter-increment|counter-reset|cue-after|cue-before|cue|cursor|\n\
+          \t\t\t\t\t\tdirection|display|\n\t\t\t\t\t\televation|empty-cells|\n\t\t\
+          \t\t\t\tfloat|\n\t\t\t\t\t\tosx-font-smoothing|\n\t\t\t\t\t\tfont(?:(?:-)(?:effect|emphasize(-position|-style)?|family|feature-settings|kerning|language-override|size(?:-adjust)?|smoothing|stretch|style|synthesis|variant(?:-alternates|-caps|-east-asian|-ligatures|-numeric|-position)?|weight))?|\n\
+          \t\t\t\t\t\theight|\n\t\t\t\t\t\timage-rendering|\n\t\t\t\t\t\tleft|letter-spacing|line-height|list-style-image|list-style-position|list-style-type|list-style|\n\
+          \t\t\t\t\t\tmargin-bottom|margin-left|margin-right|margin-top|marker-offset|margin|marks|max-height|max-width|min-height|min-width|\n\
+          \t\t\t\t\t\tobject-fit|object-position|opacity|orphans|outline-color|outline-style|outline-width|outline|overflow(-[xy])?|\n\
+          \t\t\t\t\t\tpadding-bottom|padding-left|padding-right|padding-top|padding|page-break-after|page-break-before|page-break-inside|page|pause-after|pause-before|pause|pitch-range|pitch|play-during|pointer-events|position|\n\
+          \t\t\t\t\t\tquotes|\n\t\t\t\t\t\tresize|richness|right|\n\t\t\t\t\t\tsize|speak-header|speak-numeral|speak-punctuation|speech-rate|speak|src|stress|\n\
+          \t\t\t\t\t\ttable-layout|text-(align|decoration|indent|rendering|shadow|transform)|top|text-justify\n\
+          \t\t\t\t\t\tunicode-(?:bidi|range)|\n\t\t\t\t\t\tvertical-align|visibility|voice-family|volume|\n\
+          \t\t\t\t\t\twhite-space|widows|width|word-(spacing|wrap)|\n\t\t\t\t\t\t\
+          zoom|z-index)\\b"
+        name: support.type.property-name.css
+    - begin: (:)\s*
+      beginCaptures:
+        '1':
+          name: punctuation.separator.key-value.css
+      end: \s*(;|(?=\}))
+      endCaptures:
+        '1':
+          name: punctuation.terminator.rule.css
+      name: meta.property-value.css
+      patterns:
+      - include: '#property-values'
+  selector:
+    begin: \s*(?=[:.*#a-zA-Z])
+    end: (?=[/@{)])
+    name: meta.selector.css
+    patterns:
+    - match: \b(a|abbr|acronym|address|area|article|aside|audio|b|base|big|blockquote|body|br|button|canvas|caption|cite|code|col|colgroup|datalist|dd|del|details|dfn|dialog|div|dl|dt|em|eventsource|fieldset|figure|figcaption|footer|form|frame|frameset|(h[1-6])|head|header|hgroup|hr|html|i|iframe|img|input|ins|kbd|keygen|label|legend|li|link|main|map|mark|math|menu|menuitem|meta|meter|nav|noframes|noscript|object|ol|optgroup|option|output|p|param|picture|pre|progress|q|samp|script|section|select|small|source|span|strike|strong|style|sub|summary|sup|table|tbody|td|template|textarea|tfoot|th|thead|time|title|tr|track|tt|ul|var|video|svg)\b
+      name: entity.name.tag.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+      match: (\.)[a-zA-Z0-9_-]+
+      name: entity.other.attribute-name.class.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+      match: (#)[a-zA-Z][a-zA-Z0-9_-]*
+      name: entity.other.attribute-name.id.css
+    - match: \*
+      name: entity.name.tag.wildcard.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+      match: (:)((active|valid)-drop-target)\b
+      name: entity.other.attribute-name.pseudo-class.drag-and-drop.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+      match: (:)(checked|enabled|default|disabled|indeterminate|invalid|in-range|optional|out-of-range|placeholder-shown|required|read-only|read-write|user-error|valid)\b
+      name: entity.other.attribute-name.pseudo-class.ui-state.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+      match: (:)((nth-(last-)?)?column)\b
+      name: entity.other.attribute-name.pseudo-class.grid-structural.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+        '3':
+          name: support.type.vendor-prefix.css
+        '4':
+          name: support.type.vendor-prefix.css
+        '5':
+          name: support.type.vendor-prefix.css
+        '6':
+          name: support.type.vendor-prefix.css
+        '7':
+          name: support.type.vendor-prefix.css
+      match: "(?x)(:+)\n\t\t\t\t(after|before|first-letter|first-line|\n\t\t\t\t(-moz-)?selection|\n\
+        \t\t\t\t(-moz-)(?:placeholder|focus-inner)|(?:(-webkit-|-ms-)input-)?placeholder|\n\
+        \t\t\t\t(-webkit-)(?:autofill|search-(?:cancel-button|decoration))|\n\t\t\t\
+        \t(-ms-)(?:browse|check|clear|expand|fill-lower|\n\t\t\t\tfill-upper|fill|reveal|thumb|ticks-after|\n\
+        \t\t\t\tticks-before|tooltip|track|value))\n\t\t\t\t\\b"
+      name: entity.other.attribute-name.pseudo-element.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+      match: (:)(current|(first|last)-child|(first|last|nth|only)-of-type|backdrop|empty|first|future|left|only-child|past|right|root|scope|target)\b
+      name: entity.other.attribute-name.pseudo-class.css
+    - begin: ((:)dir|lang|matches|not|nth-(?:last-)?match)(\()
+      beginCaptures:
+        '1':
+          name: entity.other.attribute-name.pseudo-class.css
+        '2':
+          name: punctuation.definition.entity.css
+        '3':
+          name: punctuation.section.function.css
+      end: \)
+      endCaptures:
+        '0':
+          name: punctuation.section.function.css
+      patterns:
+      - include: '#selector'
+    - captures:
+        '1':
+          name: entity.other.attribute-name.pseudo-class.css
+        '2':
+          name: punctuation.definition.entity.css
+        '3':
+          name: punctuation.section.function.css
+        '4':
+          name: constant.numeric.css
+        '5':
+          name: punctuation.section.function.css
+      match: ((:)nth-(?:(?:last-)?child|(?:last-)?of-type))(\()(\-?(?:\d+n?|n)(?:\+\d+)?|even|odd)(\))
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+      match: (:)(active|any-link|hover|local-link|link|visited|focus)\b
+      name: entity.other.attribute-name.pseudo-class.css
+    - captures:
+        '1':
+          name: punctuation.definition.entity.css
+        '2':
+          name: entity.other.attribute-name.attribute.css
+        '3':
+          name: punctuation.separator.operator.css
+        '4':
+          name: string.unquoted.attribute-value.css
+        '5':
+          name: string.quoted.double.attribute-value.css
+        '6':
+          name: punctuation.definition.string.begin.css
+        '7':
+          name: punctuation.definition.string.end.css
+      match: (?i)(\[)\s*(-?[_a-z\\[[:^ascii:]]][_a-z0-9\-\\[[:^ascii:]]]*)(?:\s*([~|^$*]?=)\s*(?:(-?[_a-z\\[[:^ascii:]]][_a-z0-9\-\\[[:^ascii:]]]*)|((?>(['"])(?:[^\\]|\\.)*?(\6)))))?\s*(\])
+      name: meta.attribute-selector.css
+  string-double:
+    begin: '"'
+    beginCaptures:
+      '0':
+        name: punctuation.definition.string.begin.css
+    end: '"'
+    endCaptures:
+      '0':
+        name: punctuation.definition.string.end.css
+    name: string.quoted.double.css
+    patterns:
+    - match: \\.
+      name: constant.character.escape.css
+  string-single:
+    begin: ''''
+    beginCaptures:
+      '0':
+        name: punctuation.definition.string.begin.css
+    end: ''''
+    endCaptures:
+      '0':
+        name: punctuation.definition.string.end.css
+    name: string.quoted.single.css
+    patterns:
+    - match: \\.
+      name: constant.character.escape.css
+  unicode-range:
+    patterns:
+    - captures:
+        '1':
+          name: support.constant.unicode-range.prefix.css
+        '2':
+          name: constant.codepoint-range.css
+        '3':
+          name: punctuation.section.range.css
+      match: "(?xi)\n\t\t\t\t(u\\+)\n\t\t\t\t([0-9a-f?]{1,6}\n\t\t\t\t(?:(-)[0-9a-f]{1,6})?)\n\
+        \t\t\t"
+      name: support.unicode-range.css
+  vendor-prefix:
+    match: -(?:webkit|moz|ms|o)-
+    name: support.type.vendor-prefix.css
+uuid: 69AA0917-B7BB-11D9-A7E2-000D93C8BE28
